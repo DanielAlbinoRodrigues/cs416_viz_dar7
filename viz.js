@@ -61,7 +61,6 @@ var title = d3.select("body")
 function parse_data(data) {
     clean=[]
     data.forEach(element => {
-        console.log(element['Year Range'].split("-")[0])
         clean.push({
             "id":element['Object Designation'],
             "radius":parseFloat(0.5*element['Estimated Diameter (km)']),
@@ -103,7 +102,6 @@ async function run_scene_zero(){
 
     // Read in data
     await load_data()
-    console.log(DATA)
 
     // Show text
     d3.select("body").select("#blurb")
@@ -168,7 +166,7 @@ function run_scene_one(){
         .attr('cx',function(d,i){return PLOT_MARGIN_X+get_grid_coord(i,ASTER_COL,ASTER_SPACE)['x']})
         .attr('cy',function(d,i){return PLOT_MARGIN_Y+get_grid_coord(i,ASTER_COL,ASTER_SPACE)['y']})
 
-        // Show text
+        // Show annotation
         d3.select("body").select("#blurb")
         .html(blurb_2)
         .transition(d3.transition().duration(T_TIME).ease(d3.easeLinear))
@@ -199,8 +197,7 @@ function run_scene_two(){
         .attr('cx',function(d,i){return PLOT_MARGIN_X+get_grid_coord(i,ASTER_COL,ASTER_SPACE)['x']})
         .attr('cy',function(d,i){return PLOT_MARGIN_Y+get_grid_coord(i,ASTER_COL,ASTER_SPACE)['y']})
 
-
-        // Show text
+        // Show annotation
         d3.select("body").select("#blurb")
         .html(blurb_3)
         .style("opacity",0)
@@ -226,7 +223,7 @@ async function run_scene_three(min_size,max_size,pix_to_meters){
     .style("opacity",0)
     .on("end",async ()=>{
 
-        // Display text
+        // Display annotation
         d3.select("body").select("#blurb")
         .html(blurb_4)
         .transition(d3.transition().duration(T_TIME).ease(d3.easeLinear))
@@ -242,25 +239,6 @@ async function run_scene_three(min_size,max_size,pix_to_meters){
         .attr('opacity',0)
         .transition(d3.transition().duration(T_TIME).ease(d3.easeLinear))
         .attr('opacity',1)
-        
-        // Modify circles
-        /*
-        d3.selectAll("circle").filter(function(d) { return (d.radius*1000<min_size || d.radius*1000>max_size ); })
-        .attr('opacity',1.0)
-        .transition(d3.transition().duration(T_TIME).ease(d3.easeLinear))
-        .attr('opacity',.25)
-        .on('end',()=>{
-
-            d3.selectAll("circle")
-            .transition(d3.transition().duration(T_TIME).ease(d3.easeCubicInOut))
-            .attr("r",function(d,i){return radius_scale(1000*d.radius)})
-            .on('end',()=>{
-                document.getElementById("next_button").disabled = false
-            })
-
-        })
-        */
-
 
         await d3.selectAll("circle").filter(function(d) { return (d.radius*1000<min_size || d.radius*1000>max_size ); })
         .attr('opacity',1.0)
@@ -280,13 +258,12 @@ async function run_scene_three(min_size,max_size,pix_to_meters){
 
 async function run_scene_four(min_size,max_size, title){
 
-
     d3.select("body").select("#blurb")
     .transition(d3.transition().duration(T_TIME).ease(d3.easeLinear))
     .style("opacity",0)
     .on("end",async ()=>{
 
-        // Display text
+        // Display annotation
         d3.select("body").select("#blurb")
         .html(title)
         .style("opacity",0)
@@ -401,7 +378,6 @@ function run_scene_eight(){
         .transition(d3.transition().duration(T_TIME).ease(d3.easeLinear))
         .style("opacity",1)
 
-
         range_prob = get_min_max_field(DATA,"prob")
         range_pal = get_min_max_field(DATA,"palermo")
         range_impacts = get_min_max_field(DATA,"num_impact")
@@ -417,7 +393,6 @@ function run_scene_eight(){
         .remove()
 
         // Move circles
-
         d3.selectAll("circle")
         .transition(d3.transition().duration(T_TIME).ease(d3.easeCubicInOut))
         .attr('cx',function(d,i){return PLOT_MARGIN_X+x(2*1000*d['radius'])})
@@ -453,10 +428,6 @@ function run_scene_eight(){
         document.getElementById("next_button").innerHTML = "Start Over"
 
     })
-
-
-
-
  
 }
 
@@ -512,8 +483,6 @@ function draw_colorbar_prob(){
 
 function toggle_contour(){
     
-    console.log("toggle...")
-
     CONTOUR_PALERMO = !CONTOUR_PALERMO
     document.getElementById("toggle_button").disabled = true
 
@@ -551,28 +520,20 @@ function handle_click(){
     SCENE = SCENE + 1
 
     if(SCENE==1){
-        console.log("scene 1")
         run_scene_one()
     } else if (SCENE==2){
-        console.log("scene 2")
         run_scene_two()
     } else if (SCENE==3){
-        console.log("scene 3")
         run_scene_three(0,10,1.00)
     } else if (SCENE==4){
-        console.log("scene 4")
         run_scene_four(10,25,blurb_5)
     } else if (SCENE==5){
-        console.log("scene 5")
         run_scene_four(25,9999,blurb_6)
     } else if (SCENE==6){
-        console.log("scene 6")
         run_scene_six()
     } else if (SCENE==7){
-        console.log("scene 6")
         run_scene_seven()
     } else if (SCENE==8){
-        console.log("scene 6")
         run_scene_eight()
     } else {
         d3.select("svg").selectAll('*').remove()
